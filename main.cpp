@@ -49,16 +49,22 @@ namespace topit {
 int main() {
 	using namespace topit;
 	int err = 0;
-	IDraw* shp[5] = {}; 
+	IDraw* shp[11] = {}; 
 	p_t* pts = nullptr;
 	size_t s = 0;
 	try {
-		shp[0] = new Dot({ 0, 0 });
-		shp[1] = new Dot({ 2, 3 });
-		shp[2] = new Dot({ -5, -2 });
-		shp[3] = new HLine({ -2, -2 }, 4);
-		shp[4] = new VLine({ -1, 0 }, 4);
-		for (size_t i = 0; i < 5; ++i) {
+		shp[0] = new HLine({ -3, 2 }, 7);
+		shp[1] = new VLine({ -4, -2 }, 5);
+		shp[2] = new VLine({ 4, -2 }, 5);
+		shp[3] = new HLine({ -3, -2 }, 7);  
+		shp[4] = new Dot({ -3, 3 });
+		shp[5] = new Dot({ -2, 4 });
+		shp[6] = new Dot({ -1, 5 });
+		shp[7] = new Dot({ 0, 6 });
+		shp[8] = new Dot({ 1, 5 });
+		shp[9] = new Dot({ 2, 4 });
+		shp[10] = new Dot({ 3, 3 });
+		for (size_t i = 0; i < 11; ++i) {
 			append(shp[i], &pts, s);
 		}
 		f_t fr = frame(pts, s);

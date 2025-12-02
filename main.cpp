@@ -60,6 +60,15 @@ int main() {
 	return err;
 }
 
+char* topit::canvas(f_t fr, char fill) {
+	size_t s = rows(fr) * cols(fr);
+	char* c = new char[s];
+	for (size_t i = 0; i < c; ++i) {
+		c[i] = fill;
+	}
+	return c;
+}
+
 topit::f_t topit::frame(const p_t* pts, size_t s) {
 	int minx = pts[0].x, miny = pts[0].y;
 	int maxx = minx, maxy = miny;

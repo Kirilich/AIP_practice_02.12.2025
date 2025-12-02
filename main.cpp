@@ -23,6 +23,13 @@ namespace topit {
 		p_t next(p_t prev) const override;
 		p_t d;
 	};
+	struct HLine: IDraw {
+		HLine(p_t id, size_t len);
+		p_t begin() const override;
+		p_t next(p_t prev) const override;
+		p_t segment;
+		size_t length;
+	};
 	p_t* extend(const p_t* pts, size_t s, p_t fill);
 	void extend(p_t** pts, size_t& s, p_t fill);
 	void append(const IDraw* sh, p_t** ppts, size_t& s);
@@ -35,14 +42,15 @@ namespace topit {
 int main() {
 	using namespace topit;
 	int err = 0;
-	IDraw* shp[3] = {}; 
+	IDraw* shp[4] = {}; 
 	p_t* pts = nullptr;
 	size_t s = 0;
 	try {
 		shp[0] = new Dot({ 0, 0 });
 		shp[1] = new Dot({ 2, 3 });
 		shp[2] = new Dot({ -5, -2 });
-		for (size_t i = 0; i < 3; ++i) {
+		shp[3] = new HLine({ -1, -1 }, 4);
+		for (size_t i = 0; i < 4; ++i) {
 			append(shp[i], &pts, s);
 		}
 		f_t fr = frame(pts, s);
@@ -56,6 +64,7 @@ int main() {
 		std::cerr << "Error!\n";
 		err = 1;
 	}
+	delete shp[3];
 	delete shp[2];
 	delete shp[1];
 	delete shp[0];
@@ -141,6 +150,30 @@ topit::p_t topit::Dot::next(p_t prev) const {
 	}
 	return d;
 }
+
+topit::HLine::HLine(p_t id, size_t len) :
+	IDraw(),
+	segment{ id },
+	length{ len } {
+	if (len == 0) {
+		throw std::logic_error("zero length");
+	}
+}
+
+topit::p_t topit::HLine::begin() const {
+	return segment;
+}
+
+topit::p_t topit::HLine::next(p_t prev) const {
+	if ((prev.x < segment.x) || (prev.x > segment.x + (length - 1)) || (prev.y != segment.y)) {
+		throw std::logic_error("bad prev");
+	}
+	if (prev.x == segment.x + (length - 1)) {
+		return segment;
+	}
+	return { prev.x + 1, prev.y };
+}
+
 
 bool topit::operator==(p_t a, p_t b) {
 	return a.x == b.x && a.y == b.y;

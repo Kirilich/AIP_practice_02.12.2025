@@ -47,8 +47,8 @@ int main() {
 		}
 		f_t fr = frame(pts, s);
 		char* cnv = canvas(fr, '.');
-		for (size_t i; i < s; ++i) {
-			paint(pts[i], cnv, fr, '7');
+		for (size_t i = 0; i < s; ++i) {
+			paint(pts[i], cnv, fr, '#');
 		}
 		flush(std::cout, cnv, fr);
 		delete [] cnv;

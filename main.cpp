@@ -30,7 +30,7 @@ namespace topit {
 		p_t segment;
 		size_t length;
 	};
-	struct VLine : IDraw {
+	struct VLine: IDraw {
 		VLine(p_t id, size_t len);
 		p_t begin() const override;
 		p_t next(p_t prev) const override;
@@ -170,7 +170,7 @@ topit::HLine::HLine(p_t id, size_t len) :
 	segment{ id },
 	length{ len } {
 	if (len <= 0) {
-		throw std::logic_error("zero length");
+		throw std::logic_error("error length");
 	}
 }
 
@@ -197,7 +197,7 @@ topit::VLine::VLine(p_t id, size_t len) :
 	segment{ id },
 	length{ len } {
 	if (len <= 0) {
-		throw std::logic_error("zero length");
+		throw std::logic_error("error length");
 	}
 }
 

@@ -7,6 +7,8 @@ namespace topit {
 	struct f_t { //frame_t
 		p_t aa, bb;
 	};
+	size_t rows(f_t fr);
+	size_t cols(f_t fr);
 	bool operator==(p_t a, p_t b);
 	bool operator!=(p_t a, p_t b);
 	struct IDraw {
@@ -94,4 +96,12 @@ bool topit::operator==(p_t a, p_t b) {
 
 bool topit::operator!=(p_t a, p_t b) {
 	return !(a == b);
+}
+
+size_t topit::rows(f_t fr) {
+	return (fr.bb.y - fr.aa.y + 1);
+}
+
+size_t topit::cols(f_t fr) {
+	return (fr.bb.x - fr.aa.x + 1);
 }

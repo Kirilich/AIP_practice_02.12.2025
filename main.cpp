@@ -169,7 +169,7 @@ topit::HLine::HLine(p_t id, size_t len) :
 	IDraw(),
 	segment{ id },
 	length{ len } {
-	if (len == 0) {
+	if (len <= 0) {
 		throw std::logic_error("zero length");
 	}
 }
@@ -196,7 +196,7 @@ topit::VLine::VLine(p_t id, size_t len) :
 	IDraw(),
 	segment{ id },
 	length{ len } {
-	if (len == 0) {
+	if (len <= 0) {
 		throw std::logic_error("zero length");
 	}
 }

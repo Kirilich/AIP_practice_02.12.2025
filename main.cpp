@@ -49,7 +49,7 @@ int main() {
 		shp[0] = new Dot({ 0, 0 });
 		shp[1] = new Dot({ 2, 3 });
 		shp[2] = new Dot({ -5, -2 });
-		shp[3] = new HLine({ -1, -1 }, 4);
+		shp[3] = new HLine({ -2, -2 }, 4);
 		for (size_t i = 0; i < 4; ++i) {
 			append(shp[i], &pts, s);
 		}
@@ -82,7 +82,7 @@ topit::p_t* topit::extend(const p_t* pts, size_t s, p_t fill) {
 
 void topit::extend(p_t** pts, size_t& s, p_t fill) {
 	p_t* r = extend(*pts, s, fill);
-	delete[] * pts;
+	delete[] *pts;
 	++s;
 	*pts = r;
 }
@@ -165,13 +165,17 @@ topit::p_t topit::HLine::begin() const {
 }
 
 topit::p_t topit::HLine::next(p_t prev) const {
-	if ((prev.x < segment.x) || (prev.x > segment.x + (length - 1)) || (prev.y != segment.y)) {
-		throw std::logic_error("bad prev");
-	}
-	if (prev.x == segment.x + (length - 1)) {
+	if (prev == segment) {
+		if (length > 1) {
+			return { segment.x + 1, segment.y };
+		}
 		return segment;
 	}
-	return { prev.x + 1, prev.y };
+	int b = prev.x - segment.x;
+	if (b < length - 1) {
+		return { prev.x + 1, prev.y };
+	}
+	return segment;
 }
 
 

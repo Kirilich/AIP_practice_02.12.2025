@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <stdexcept>
 namespace topit {
 	struct p_t { //point_t
 		int x, y;

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
 namespace topit {
 	struct p_t { //point_t
 		int x, y;
@@ -37,6 +38,18 @@ namespace topit {
 		p_t segment;
 		size_t length;
 	};
+	// Новый: Circle
+	struct Circle : IDraw {
+		Circle(p_t center, int radius);
+		p_t begin() const override;
+		p_t next(p_t prev) const override;
+	private:
+		p_t c; // center
+		int r;
+
+		bool covers(int x, int y) const; // теперь всегда только контур
+	};
+
 	p_t* extend(const p_t* pts, size_t s, p_t fill);
 	void extend(p_t** pts, size_t& s, p_t fill);
 	void append(const IDraw* sh, p_t** ppts, size_t& s);
@@ -49,22 +62,12 @@ namespace topit {
 int main() {
 	using namespace topit;
 	int err = 0;
-	IDraw* shp[11] = {}; 
+	IDraw* shp[1] = {}; 
 	p_t* pts = nullptr;
 	size_t s = 0;
 	try {
-		shp[0] = new HLine({ -3, 2 }, 7);
-		shp[1] = new VLine({ -4, -2 }, 5);
-		shp[2] = new VLine({ 4, -2 }, 5);
-		shp[3] = new HLine({ -3, -2 }, 7);  
-		shp[4] = new Dot({ -3, 3 });
-		shp[5] = new Dot({ -2, 4 });
-		shp[6] = new Dot({ -1, 5 });
-		shp[7] = new Dot({ 0, 6 });
-		shp[8] = new Dot({ 1, 5 });
-		shp[9] = new Dot({ 2, 4 });
-		shp[10] = new Dot({ 3, 3 });
-		for (size_t i = 0; i < 11; ++i) {
+		shp[0] = new Circle({ 0, 0 }, 5);
+		for (size_t i = 0; i < 1; ++i) {
 			append(shp[i], &pts, s);
 		}
 		f_t fr = frame(pts, s);
@@ -218,6 +221,69 @@ topit::p_t topit::VLine::next(p_t prev) const {
 	}
 	return segment;
 }
+
+//
+// Circle
+topit::Circle::Circle(p_t center, int radius) :
+	IDraw(),
+	c{ center },
+	r(radius)
+{
+	if (radius <= 0) throw std::logic_error("bad radius");
+}
+
+bool topit::Circle::covers(int x, int y) const {
+	long dx = x - c.x;
+	long dy = y - c.y;
+	long d2 = dx * dx + dy * dy;
+
+	// только контур, толщина ~1
+	long low = (long)((r - 0.5) * (r - 0.5));
+	long high = (long)((r + 0.5) * (r + 0.5));
+	return d2 >= low && d2 <= high;
+}
+
+topit::p_t topit::Circle::begin() const {
+	for (int yy = c.y + r; yy >= c.y - r; --yy) {
+		for (int xx = c.x - r; xx <= c.x + r; ++xx) {
+			if (covers(xx, yy)) return p_t{ xx, yy };
+		}
+	}
+	return p_t{ c.x - r, c.y }; // fallback
+}
+
+topit::p_t topit::Circle::next(p_t prev) const {
+	bool found_prev = false;
+	p_t first{ 0,0 };
+	bool first_set = false;
+
+	for (int yy = c.y + r; yy >= c.y - r; --yy) {
+		for (int xx = c.x - r; xx <= c.x + r; ++xx) {
+			if (!covers(xx, yy)) continue;
+
+			if (!first_set) {
+				first = p_t{ xx, yy };
+				first_set = true;
+			}
+			if (!found_prev) {
+				if (xx == prev.x && yy == prev.y) {
+					found_prev = true;
+					continue;
+				}
+			}
+			else {
+				return p_t{ xx, yy };
+			}
+		}
+	}
+
+	if (first_set) return first;
+	return prev;
+}
+
+
+
+//
 
 bool topit::operator==(p_t a, p_t b) {
 	return a.x == b.x && a.y == b.y;

@@ -123,8 +123,21 @@ int main() {
 }
 
 void topit::Layers::append(const IDraw& dr) {
-	append(&dr, &pts, points_);
-	size_t ext_sozes = new size_t[layers + 1]
+	size_t ext_sozes = new size_t[layers + 1];
+	try {
+		append(&dr, &pts, points_);
+	}
+	catch (...) {
+		delete[] ext_sizes;
+		throw;
+	}
+	for (size_t i = 0, i < layers_; ++i) {
+		ext_sizes[i] = sizes_[i];
+	}
+	ext_sizes[layers_] = points_;
+	delete[] sizes_;
+	sizes_ = ext_sizes;
+	++layers;
 }
 
 topit::Layers::Layers() :

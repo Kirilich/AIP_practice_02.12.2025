@@ -55,6 +55,8 @@ namespace topit {
 	void extend(p_t** pts, size_t& s, p_t fill);
 	void append(const IDraw* sh, p_t** ppts, size_t& s);
 	f_t frame(const p_t* pts, size_t s);
+	struct Layers;
+	f_t frame(const Layers& ls);
 	char* canvas(f_t fr, char fill);
 	void paint(p_t p, char* cnv, f_t fr, char fill);
 	void flush(std::ostream& os, const char* cnv, f_t fr);
@@ -70,9 +72,7 @@ namespace topit {
 		size_t layers() const;
 		size_t start(size_t i) const;
 		size_t end(size_t i) const;
-		size_t layer(size_t i) const;
 		p_t  point(size_t i) const;
-		f_t frame();
 	private:
 		size_t points_;
 		p_t * pts_;
@@ -99,7 +99,7 @@ int main() {
 		for (size_t i = 0; i < 8; ++i) {
 			layers.append(*(shp[i]));
 		}
-		f_t fr = layers.frame();
+		f_t fr = frame(layers);
 		char* cnv = canvas(fr, '.');
 		const char * brush = "#0@%$+=7";
 		for (size_t k = 0; k < layers.layers(); ++k) {
@@ -123,28 +123,28 @@ int main() {
 }
 
 void topit::Layers::append(const IDraw& dr) {
-	size_t ext_sozes = new size_t[layers + 1];
+	size_t* ext_sizes = new size_t[layers_ + 1];
 	try {
-		append(&dr, &pts, points_);
+		topit::append(&dr, &pts_, points_);
 	}
 	catch (...) {
 		delete[] ext_sizes;
 		throw;
 	}
-	for (size_t i = 0, i < layers_; ++i) {
+	for (size_t i = 0; i < layers_; ++i) {
 		ext_sizes[i] = sizes_[i];
 	}
 	ext_sizes[layers_] = points_;
 	delete[] sizes_;
 	sizes_ = ext_sizes;
-	++layers;
+	++layers_;
 }
 
 topit::Layers::Layers() :
 	points_{0},
-	pts{nullptr},
+	pts_{nullptr},
 	layers_{0},
-	size_{nullptr}
+	sizes_{nullptr}
 {}
 
 topit::Layers::~Layers() {

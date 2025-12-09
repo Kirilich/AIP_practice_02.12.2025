@@ -44,6 +44,13 @@ namespace topit {
 		p_t next(p_t prev) const override;
 		f_t rect;
 	};
+	struct FRect : IDraw {
+		FRect(p_t pos, int w, int h);
+		FRect(p_t a, p_t b);
+		p_t begin() const override;
+		p_t next(p_t prev) const override;
+		f_t rect;
+	};
 	p_t* extend(const p_t* pts, size_t s, p_t fill);
 	void extend(p_t** pts, size_t& s, p_t fill);
 	void append(const IDraw* sh, p_t** ppts, size_t& s);
@@ -56,11 +63,12 @@ namespace topit {
 int main() {
 	using namespace topit;
 	int err = 0;
-	IDraw* shp[7] = {}; 
+	IDraw* shp[8] = {}; 
+	size_t sizes[8] = {};
 	p_t* pts = nullptr;
 	size_t s = 0;
 	try {
-		shp[0] = new Rect({-3, -2}, {3, 3}); 
+		shp[0] = new FRect({-3, -2}, {3, 3}); 
 		shp[1] = new Dot({ -3, 3 });
 		shp[2] = new Dot({ -2, 4 });
 		shp[3] = new Dot({ -1, 5 });
@@ -68,14 +76,21 @@ int main() {
 		shp[5] = new Dot({ 1, 5 });
 		shp[6] = new Dot({ 2, 4 });
 		shp[7] = new Dot({ 3, 3 });
-		for (size_t i = 0; i < 7; ++i) {
+		for (size_t i = 0; i < 8; ++i) {
 			append(shp[i], &pts, s);
+			sizes[i] = s;
 		}
 		f_t fr = frame(pts, s);
 		char* cnv = canvas(fr, '.');
-		for (size_t i = 0; i < s; ++i) {
-			paint(pts[i], cnv, fr, '#');
+		const char * brush = "#0@%$+=7";
+		for (size_t k = 0; k < 8; ++k) {
+			size_t start = !k ? 0 : sizes[k - 1];
+			size_t end = sizes[k];
+			for (size_t i = start; i < end; ++i) {
+				paint(pts[i], cnv, fr, brush[k]);
+			}
 		}
+		
 		flush(std::cout, cnv, fr);
 		delete [] cnv;
 	} catch(...) {
@@ -224,6 +239,7 @@ topit::p_t topit::VLine::next(p_t prev) const {
 }
 
 topit::Rect::Rect(p_t pos, int w, int h) :
+	IDraw(),
 	rect{pos, {pos.x + w, pos.y + h}}
 {
 	if (!(w > 0 && h > 0)) {
@@ -249,8 +265,39 @@ topit::p_t topit::Rect::next(p_t prev) const {
 	else if (prev.x == rect.bb.x && prev.y > rect.aa.y) {
 		return { prev.x, prev.y - 1 };
 	}
-	else if(prev.y == rect.aa.y && prev.x > rect.aa.x){
+	else if (prev.y == rect.aa.y && prev.x > rect.aa.x) {
 		return { prev.x - 1, prev.y };
+	}
+	throw std::logic_error("bad impl");
+}
+
+topit::FRect::FRect(p_t pos, int w, int h) :
+	IDraw(),
+	rect{ pos, {pos.x + w, pos.y + h} }
+{
+	if (!(w > 0 && h > 0)) {
+		throw std::logic_error("bad rect");
+	}
+}
+
+topit::FRect::FRect(p_t a, p_t b) :
+	FRect(a, b.x - a.x, b.y - a.y)
+{
+}
+
+topit::p_t topit::FRect::begin() const {
+	return rect.aa;
+}
+
+topit::p_t topit::FRect::next(p_t prev) const {
+	if (prev.x < rect.bb.x) {
+		return { prev.x + 1, prev.y };
+	}
+	else if (prev.x == rect.bb.x && prev.y < rect.bb.y) {
+		return { rect.aa.x, prev.y + 1 }; //jump on begin
+	}
+	else if (prev == rect.bb) {
+		return rect.aa;
 	}
 	throw std::logic_error("bad impl");
 }

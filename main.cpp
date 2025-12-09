@@ -68,11 +68,21 @@ namespace topit {
 		Layers(Layers&&) = delete; //hw
 		Layers& operator=(Layers&&) = delete; //homework
 		void append(const IDraw& dr);
-		size_t points() const;
-		size_t layers() const;
-		size_t start(size_t i) const;
-		size_t end(size_t i) const;
-		p_t  point(size_t i) const;
+		size_t points() const {
+			return points_;
+		}
+		size_t layers() const {
+			return layers_;
+		}
+		size_t start(size_t i) const {
+			return !i ? 0 : sizes_[i - 1];
+		}
+		size_t end(size_t i) const {
+			return sizes_[i];
+		}
+		p_t  point(size_t i) const {
+			return pts_[i];
+		}
 	private:
 		size_t points_;
 		p_t * pts_;

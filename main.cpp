@@ -122,6 +122,23 @@ int main() {
 	return err;
 }
 
+void topit::Layers::append(const IDraw& dr) {
+	append(&dr, &pts, points_);
+	size_t ext_sozes = new size_t[layers + 1]
+}
+
+topit::Layers::Layers() :
+	points_{0},
+	pts{nullptr},
+	layers_{0},
+	size_{nullptr}
+{}
+
+topit::Layers::~Layers() {
+	delete[] pts_;
+	delete[] sizes_;
+}
+
 topit::p_t* topit::extend(const p_t* pts, size_t s, p_t fill) {
 	p_t* r = new p_t[s + 1];
 	for (size_t i = 0; i < s; ++i) {

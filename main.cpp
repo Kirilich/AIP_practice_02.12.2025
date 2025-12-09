@@ -226,7 +226,17 @@ topit::p_t topit::VLine::next(p_t prev) const {
 	return segment;
 }
 
+topit::Rect::Rect(p_t pos, int w, int h) :
+	rect{pos, {pos.x + w, pos.y + h}}
+{
+	if (!(w > 0 && h > 0)) {
+		throw std::logic_error("bad rect");
+	}
+}
 
+topit::Rect::Rect(p_t a, p_t b) :
+	Rect(a, b.x - a.x, b.y - a.y)
+{}
 
 bool topit::operator==(p_t a, p_t b) {
 	return a.x == b.x && a.y == b.y;

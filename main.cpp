@@ -68,8 +68,11 @@ namespace topit {
 		void append(const IDraw& dr);
 		size_t points() const;
 		size_t layers() const;
+		size_t start(size_t i) const;
+		size_t end(size_t i) const;
 		size_t layer(size_t i) const;
 		p_t  point(size_t i) const;
+		f_t frame();
 	private:
 		size_t points_;
 		p_t * pts_;
@@ -83,9 +86,7 @@ int main() {
 	int err = 0;
 
 	IDraw* shp[8] = {}; 
-	size_t sizes[8] = {};
-	p_t* pts = nullptr;
-	size_t s = 0;
+	Layers layers;
 	try {
 		shp[0] = new FRect({-3, -2}, {3, 3}); 
 		shp[1] = new Dot({ -3, 3 });
@@ -96,20 +97,18 @@ int main() {
 		shp[6] = new Dot({ 2, 4 });
 		shp[7] = new Dot({ 3, 3 });
 		for (size_t i = 0; i < 8; ++i) {
-			append(shp[i], &pts, s);
-			sizes[i] = s;
+			layers.append(*(shp[i]));
 		}
-		f_t fr = frame(pts, s);
+		f_t fr = layers.frame();
 		char* cnv = canvas(fr, '.');
 		const char * brush = "#0@%$+=7";
-		for (size_t k = 0; k < 8; ++k) {
-			size_t start = !k ? 0 : sizes[k - 1];
-			size_t end = sizes[k];
+		for (size_t k = 0; k < layers.layers(); ++k) {
+			size_t start = layers.start(k);
+			size_t end = layers.end(k);
 			for (size_t i = start; i < end; ++i) {
-				paint(pts[i], cnv, fr, brush[k]);
+				paint(layers.point(i), cnv, fr, brush[k]);
 			}
 		}
-		
 		flush(std::cout, cnv, fr);
 		delete [] cnv;
 	} catch(...) {

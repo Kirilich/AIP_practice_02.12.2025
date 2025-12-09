@@ -55,8 +55,6 @@ namespace topit {
 	void extend(p_t** pts, size_t& s, p_t fill);
 	void append(const IDraw* sh, p_t** ppts, size_t& s);
 	f_t frame(const p_t* pts, size_t s);
-	struct Layers;
-	f_t frame(const Layers& ls);
 	char* canvas(f_t fr, char fill);
 	void paint(p_t p, char* cnv, f_t fr, char fill);
 	void flush(std::ostream& os, const char* cnv, f_t fr);
@@ -68,6 +66,9 @@ namespace topit {
 		Layers(Layers&&) = delete; //hw
 		Layers& operator=(Layers&&) = delete; //homework
 		void append(const IDraw& dr);
+		f_t frame() const {
+			return topit::frame(pts_, points_);
+		}
 		size_t points() const {
 			return points_;
 		}
@@ -109,7 +110,7 @@ int main() {
 		for (size_t i = 0; i < 8; ++i) {
 			layers.append(*(shp[i]));
 		}
-		f_t fr = frame(layers);
+		f_t fr = layers.frame();
 		char* cnv = canvas(fr, '.');
 		const char * brush = "#0@%$+=7";
 		for (size_t k = 0; k < layers.layers(); ++k) {
@@ -162,6 +163,8 @@ topit::Layers::~Layers() {
 	delete[] sizes_;
 }
 
+
+
 topit::p_t* topit::extend(const p_t* pts, size_t s, p_t fill) {
 	p_t* r = new p_t[s + 1];
 	for (size_t i = 0; i < s; ++i) {
@@ -212,7 +215,7 @@ char* topit::canvas(f_t fr, char fill) {
 	return c;
 }
 
-topit::f_t topit::frame(const p_t* pts, size_t s) {
+topit::f_t topit::frame(const p_t* pts, size_t s) { //тоже самое только layers pts i пончик такой же для Layers
 	int minx = pts[0].x, miny = pts[0].y;
 	int maxx = minx, maxy = miny;
 	for (size_t i = 0; i < s; ++i) {

@@ -4,4 +4,6 @@
 #include "idraw.hpp"
 #include "dot.hpp"
 #include "canvas.hpp"
+#include "hline.hpp"
+#include "vline.hpp"
 #endif

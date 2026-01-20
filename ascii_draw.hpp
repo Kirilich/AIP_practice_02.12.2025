@@ -6,4 +6,5 @@
 #include "canvas.hpp"
 #include "hline.hpp"
 #include "vline.hpp"
+#include "diamond.hpp"
 #endif

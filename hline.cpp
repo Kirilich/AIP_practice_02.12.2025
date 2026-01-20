@@ -1,4 +1,5 @@
 #include "hline.hpp"
+#include <stdexcept>
 
 topit::HLine::HLine(p_t id, size_t len) :
 	IDraw(),

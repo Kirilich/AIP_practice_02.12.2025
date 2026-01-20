@@ -1,4 +1,5 @@
 #include "vline.hpp"
+#include <stdexcept>
 
 topit::VLine::VLine(p_t id, size_t len) :
 	IDraw(),
